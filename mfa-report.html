@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Salesforce MFA Audit Report</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 32px; color: #111827; background: #ffffff; line-height: 1.5; }
+    h1, h2, h3 { margin: 0 0 12px 0; }
+    h2 { margin-top: 28px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+    .muted { color: #6b7280; }
+    .score { color: #374151; font-weight: 600; margin-bottom: 12px; }
+    .status { display: inline-block; padding: 2px 8px; border: 1px solid #d1d5db; border-radius: 999px; font-size: 12px; }
+    .lead { margin-bottom: 18px; }
+    .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin: 14px 0; }
+    .exec-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 8px 0 20px; }
+    .exec-card { border-radius: 14px; padding: 16px; border: 1px solid transparent; }
+    .exec-card .card-label { font-size: 0.92rem; font-weight: 600; color: #475569; margin-bottom: 6px; }
+    .exec-card .card-value { font-size: 1.35rem; font-weight: 700; color: #0f172a; }
+    .exec-card .card-subvalue { font-size: 0.9rem; color: #334155; margin-top: 6px; }
+    .exec-card.hero { grid-column: 1 / -1; }
+    .exec-card.hero .card-value { font-size: 1.7rem; }
+    .status-green { background: #ecfdf5; border-color: #86efac; }
+    .status-yellow { background: #fffbeb; border-color: #fcd34d; }
+    .status-red { background: #fef2f2; border-color: #fca5a5; }
+    .status-blue { background: #eff6ff; border-color: #93c5fd; }
+    .status-gray { background: #f8fafc; border-color: #cbd5e1; }
+    details.collapsible > summary { cursor: pointer; font-weight: 600; font-size: 1.05em; display: flex; align-items: center; justify-content: space-between; gap: 12px; list-style-position: inside; }
+    details.collapsible > summary:hover { color: #2563eb; }
+    details.collapsible[open] > summary { margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 10px; }
+    details.collapsible .summary-count { font-weight: 500; color: #6b7280; font-size: 0.85em; white-space: nowrap; }
+    details.collapsible .summary-hint { font-weight: 400; color: #6b7280; font-size: 0.82em; font-style: italic; }
+    details.collapsible[open] > summary .summary-hint { display: none; }
+    details.collapsible .collapsible-body > div { margin: 6px 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    ul { margin: 8px 0 0 20px; }
+    li { margin: 4px 0; }
+    .svg-wrap { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; overflow-x: auto; }
+    .check-list li { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Salesforce MFA Audit Report</h1>
+  <div class="muted">Run at: 2026-06-26 12:22:55 EDT-0400</div>
+
+  <h2>Executive Summary</h2>
+  <div class="exec-cards">
+    <div class="exec-card hero status-yellow"><div class="card-label">Overall readiness</div><div class="card-value">⚠️ Needs review</div><div class="card-subvalue">5/6 passing | ⚠️ 1 warning</div></div>
+    <div class="exec-card status-green"><div class="card-label">Require MFA for all direct UI logins</div><div class="card-value">✅ PASS</div><div class="card-subvalue">Value: True</div></div>
+    <div class="exec-card status-green"><div class="card-label">Built-in authenticator allowed</div><div class="card-value">✅ PASS</div><div class="card-subvalue">Value: True</div></div>
+    <div class="exec-card status-green"><div class="card-label">Physical security key (U2F/WebAuthn) allowed</div><div class="card-value">✅ PASS</div><div class="card-subvalue">Value: True</div></div>
+    <div class="exec-card status-green"><div class="card-label">No MFA bypass / waiver assignments detected</div><div class="card-value">✅ PASS</div><div class="card-subvalue">Count: 0</div></div>
+    <div class="exec-card status-green"><div class="card-label">Privileged users exist and the org allows at least one phishing-resistant MFA method</div><div class="card-value">✅ PASS</div><div class="card-subvalue">Count: 85</div></div>
+    <div class="exec-card status-yellow"><div class="card-label">SSO is configured; review sampled LoginHistory AMR signals and validate all IdP AMR/ACR responses</div><div class="card-value">⚠️ WARN</div><div class="card-subvalue">SAML config(s): 7</div></div>
+  </div>
+  <ul>
+    <li><strong>Primary takeaway:</strong> 85 privileged internal user(s) must be ready for phishing-resistant MFA, and 0 bypass assignment(s) were detected.</li>
+    <li><strong>Coverage snapshot:</strong> 250 active internal user(s), 32 user(s) with permission-based UI MFA, 0 user(s) not covered if org-wide UI MFA is off.</li>
+    <li><strong>Per-user MFA methods:</strong> visible for 146 internal user(s).</li>
+    <li><strong>SSO snapshot:</strong> 7 SAML config(s) detected.</li>
+    <li><strong>Sampling note:</strong> User-based counts and user lists in this report are based on the first 250 queried users; displayed user sections are capped to 50 rows.</li>
+  </ul>
+
+  <h2>Org</h2>
+  <ul>
+    <li><strong>Alias:</strong> Disney VX Sandbox</li>
+    <li><strong>Username:</strong> rick.rice@disney.salesforce.com.dtcvx.full</li>
+    <li><strong>Instance:</strong> https://hulu--full.sandbox.my.salesforce.com</li>
+  </ul>
+
+  <h2>Issue Scatterplot</h2>
+  <div class="lead">Point positions use a log-scaled Y-axis so a very large category does not visually flatten the smaller issue categories. Raw counts are still shown inside each point and in the summary below.</div>
+  <div class="svg-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 440" width="840" height="440" role="img" aria-label="Log-scaled scatterplot of MFA issues by category">
+<rect x="0" y="0" width="100%" height="100%" fill="white" />
+<line x1="90" y1="60" x2="90" y2="330" stroke="#4b5563" stroke-width="1.5" />
+<line x1="90" y1="330" x2="750" y2="330" stroke="#4b5563" stroke-width="1.5" />
+<line x1="90" y1="330.0" x2="750" y2="330.0" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="334.0" text-anchor="end" font-size="12" fill="#6b7280">1</text>
+<line x1="90" y1="292.70652793260643" x2="750" y2="292.70652793260643" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="296.70652793260643" text-anchor="end" font-size="12" fill="#6b7280">2</text>
+<line x1="90" y1="243.40723945082175" x2="750" y2="243.40723945082175" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="247.40723945082175" text-anchor="end" font-size="12" fill="#6b7280">5</text>
+<line x1="90" y1="206.11376738342815" x2="750" y2="206.11376738342815" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="210.11376738342815" text-anchor="end" font-size="12" fill="#6b7280">10</text>
+<line x1="90" y1="168.82029531603456" x2="750" y2="168.82029531603456" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="172.82029531603456" text-anchor="end" font-size="12" fill="#6b7280">20</text>
+<line x1="90" y1="119.5210068342499" x2="750" y2="119.5210068342499" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="123.5210068342499" text-anchor="end" font-size="12" fill="#6b7280">50</text>
+<line x1="90" y1="90.971558154143" x2="750" y2="90.971558154143" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="94.971558154143" text-anchor="end" font-size="12" fill="#6b7280">85</text>
+<circle cx="90.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="90.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="90.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="90.0" dy="0">Lack of MFA</tspan><tspan x="90.0" dy="14">options</tspan></text>
+<circle cx="222.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="222.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="222.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="222.0" dy="0">Failed security</tspan><tspan x="222.0" dy="14">checks</tspan></text>
+<circle cx="354.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="354.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="354.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="354.0" dy="0">Logins without</tspan><tspan x="354.0" dy="14">acceptable MFA</tspan><tspan x="354.0" dy="14">signal</tspan></text>
+<circle cx="486.0" cy="90.971558154143" r="58.09772228646443" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="486.0" y="94.971558154143" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">85</text>
+<text x="486.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="486.0" dy="0">Elevated</tspan><tspan x="486.0" dy="14">permissions</tspan></text>
+<circle cx="618.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="618.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="618.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="618.0" dy="0">Waive MFA</tspan><tspan x="618.0" dy="14">permission</tspan><tspan x="618.0" dy="14">instances</tspan></text>
+<circle cx="750.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="750.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="750.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="750.0" dy="0">Users uncovered</tspan><tspan x="750.0" dy="14">if UI MFA off</tspan></text>
+<text x="26" y="195.0" text-anchor="middle" font-size="13" fill="#374151" transform="rotate(-90 26 195.0)">Occurrences (count, log scale)</text>
+<text x="420.0" y="422" text-anchor="middle" font-size="13" fill="#374151">MFA issue category</text>
+</svg></div>
+  <ul>
+    <li><strong>Lack of MFA options:</strong> 0 occurrence(s) - Disabled built-in authenticator and hardware key options.</li><li><strong>Failed security checks:</strong> 0 occurrence(s) - Security-focused audit checks currently failing for this org.</li><li><strong>Logins without acceptable MFA signal:</strong> 0 occurrence(s) - Recent logins classified weak/none/unrecognized/missing (not standard or phishing-resistant) out of 0 sampled logins.</li><li><strong>Elevated permissions:</strong> 85 occurrence(s) - Privileged internal users in phishing-resistant MFA scope.</li><li><strong>Waive MFA permission instances:</strong> 0 occurrence(s) - Users with MFA bypass / waiver assignments.</li><li><strong>Users uncovered if UI MFA off:</strong> 0 occurrence(s) - Internal users without permission-based MFA coverage if org-wide UI MFA is disabled.</li>
+  </ul>
+
+  <h2>Configurations</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Security settings</h3>
+      <ul>
+        <li><span class="status">✅ PASS</span> Direct UI MFA required: <code>True</code></li>
+        <li><span class="status">✅ PASS</span> Built-in authenticator enabled: <code>True</code></li>
+        <li><span class="status">✅ PASS</span> Security key / U2F enabled: <code>True</code></li>
+        <li><span class="status">ℹ️ INFO</span> Lightning Login enabled: <code>True</code></li>
+        <li><span class="status">ℹ️ INFO</span> SMS identity enabled: <code>True</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Single sign-on settings</h3>
+      <ul>
+        <li><span class="status">⚠️ WARN</span> SAML login enabled: <code>True</code></li>
+        <li><span class="status">ℹ️ INFO</span> Multiple SAML configs enabled: <code>True</code></li>
+        <li><span class="status">ℹ️ INFO</span> Login with Salesforce credentials disabled: <code>True</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Checks</h2>
+  <ul class="check-list">
+    <li><span class="status">✅ PASS</span> Require MFA for all direct UI logins <code>True</code></li><li><span class="status">✅ PASS</span> Built-in authenticator allowed <code>True</code></li><li><span class="status">✅ PASS</span> Physical security key (U2F/WebAuthn) allowed <code>True</code></li><li><span class="status">✅ PASS</span> No MFA bypass / waiver assignments detected [0]</li><li><span class="status">✅ PASS</span> Privileged users exist and the org allows at least one phishing-resistant MFA method [85]</li><li><span class="status">⚠️ WARN</span> SSO is configured; review sampled LoginHistory AMR signals and validate all IdP AMR/ACR responses</li>
+  </ul>
+
+  <h2>SSO Signal History</h2>
+  <ul>
+    <li>LoginHistory rows sampled: 100</li>
+    <li>Rows marked as SSO via <code>AuthenticationServiceId</code>: 25</li>
+    <li><code>AuthMethodReference</code> field available: True</li>
+    <li>ACR context reference field available: False</li>
+    <li>Rows with AMR values: 25</li>
+    <li>Rows with phishing-resistant matches: 2</li>
+    <li>Rows with standard MFA matches: 0</li>
+    <li>Rows with weak/no MFA matches: 0</li>
+  </ul>
+  <div class="card">
+    <h3>Observed AMR Codes</h3>
+    <ul><li><span class="status">❔ UNKNOWN</span> <code>[pwd]</code> observed 23 time(s) -> Unrecognized</li><li><span class="status">✅ PASS</span> <code>swk</code> observed 2 time(s) -> Phishing-resistant MFA</li><li><span class="status">⚠️ WARN</span> <code>okta_verify</code> observed 2 time(s) -> Standard MFA</li></ul>
+  </div>
+  <details class="card collapsible">
+    <summary><span class="summary-title">Recent Rows With SSO Signal Detail <span class="summary-hint">(please expand for details)</span></span><span class="summary-count">20 row(s)</span></summary>
+    <div class="collapsible-body">
+    <ul>
+      <li><span class="status">❔ UNKNOWN</span> 2026-06-26T16:15:17.000+0000 | theshayesultan@gmail.com &lt;theshayesultan@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T15:45:49.000+0000 | alaricecv@gmail.com &lt;alaricecv@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T15:22:32.000+0000 | XXX &lt;andrew.mackie+6a3d8b22@disneyplustesting.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T14:34:02.000+0000 | andrew.a.mackie@outlook.com &lt;andrew.a.mackie@outlook.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T13:59:33.000+0000 | laura.occh@icloud.com &lt;laura.occh@icloud.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T13:55:59.000+0000 | laura.occh@icloud.com &lt;laura.occh@icloud.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T13:50:51.000+0000 | staceymurray86@yahoo.com.au &lt;staceymurray86@yahoo.com.au.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T13:48:49.000+0000 | staceymurray86@yahoo.com.au &lt;staceymurray86@yahoo.com.au.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T13:42:15.000+0000 | mia &lt;mina.ihihi.-nd@disneystreaming.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">✅ PASS</span> 2026-06-26T13:06:08.000+0000 | Jessica &lt;jessica.chambers.-nd@disney.com.dtcvx.full&gt; | Browser | AMR: <code>swk;okta_verify</code> | ACR: <code>not available</code> | Match: Phishing-resistant MFA</li><li><span class="status">✅ PASS</span> 2026-06-26T13:06:03.000+0000 | Jessica &lt;jessica.chambers.-nd@disney.com.dtcvx.full&gt; | Browser | AMR: <code>swk;okta_verify</code> | ACR: <code>not available</code> | Match: Phishing-resistant MFA</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T13:02:41.000+0000 | avesemman@gmail.com &lt;avesemman@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T12:48:33.000+0000 | vintage_ainrashid@hotmail.com &lt;vintage_ainrashid@hotmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T12:44:28.000+0000 | vintage_ainrashid@hotmail.com &lt;vintage_ainrashid@hotmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T12:42:51.000+0000 | adut.malieth@gmail.com &lt;adut.malieth@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T12:14:16.000+0000 | emmykessing2007@gmail.com &lt;emmykessing2007@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T12:06:36.000+0000 | camandheidib@gmail.com &lt;camandheidib@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T11:57:45.000+0000 | mshumeb@gmail.com &lt;mshumeb@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T11:56:24.000+0000 | xilcarswell@gmail.com &lt;xilcarswell@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li><li><span class="status">❔ UNKNOWN</span> 2026-06-26T11:53:02.000+0000 | mshumeb@gmail.com &lt;mshumeb@gmail.com.vx&gt; | Browser | AMR: <code>[pwd]</code> | ACR: <code>not available</code> | Match: Unrecognized</li>
+    </ul>
+    </div>
+  </details>
+
+  <h2>Non-SSO Verification History</h2>
+  <ul>
+    <li>VerificationHistory rows sampled: 100</li>
+    <li>Non-SSO verification rows retained: 99</li>
+    <li>Rows with phishing-resistant methods: 32</li>
+    <li>Rows with standard MFA methods: 67</li>
+    <li>Rows with weak or recovery methods: 0</li>
+  </ul>
+  <div class="card">
+    <h3>Observed Non-SSO MFA Methods</h3>
+    <ul><li><span class="status">⚠️ WARN</span> <code>SalesforceAuthenticator</code> (Salesforce Authenticator) observed 35 time(s) -> Standard MFA</li><li><span class="status">✅ PASS</span> <code>BuiltInAuthenticator</code> (Built-In Authenticator) observed 32 time(s) -> Phishing-resistant MFA</li><li><span class="status">⚠️ WARN</span> <code>LL</code> (Lightning Login) observed 17 time(s) -> Standard MFA</li><li><span class="status">⚠️ WARN</span> <code>Totp</code> (One-time password) observed 15 time(s) -> Standard MFA</li></ul>
+  </div>
+  <details class="card collapsible">
+    <summary><span class="summary-title">Recent Non-SSO Verification Rows <span class="summary-hint">(please expand for details)</span></span><span class="summary-count">20 row(s)</span></summary>
+    <div class="collapsible-body">
+    <ul>
+      <li><span class="status">⚠️ WARN</span> 2026-06-26T16:00:39.000+0000 | Kameron &lt;kameron@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>SalesforceAuthenticator</code> | Label: Salesforce Authenticator | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T16:00:30.000+0000 | Kameron &lt;kameron@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>SalesforceAuthenticator</code> | Label: Salesforce Authenticator | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T15:46:22.000+0000 | Andrew &lt;andrew@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>Totp</code> | Label: One-time password | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T15:46:11.000+0000 | Andrew &lt;andrew@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>Totp</code> | Label: One-time password | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T15:44:24.000+0000 | Alfred &lt;alfred@sarkisconsult.com.dtcvx.full&gt; | Browser | Method: <code>Totp</code> | Label: One-time password | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T15:44:14.000+0000 | Lindsay &lt;lindsay@disney.com.full&gt; | Browser | Method: <code>SalesforceAuthenticator</code> | Label: Salesforce Authenticator | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T15:44:06.000+0000 | Lindsay &lt;lindsay@disney.com.full&gt; | Browser | Method: <code>SalesforceAuthenticator</code> | Label: Salesforce Authenticator | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T15:44:06.000+0000 | Alfred &lt;alfred@sarkisconsult.com.dtcvx.full&gt; | Browser | Method: <code>Totp</code> | Label: One-time password | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T14:56:17.000+0000 | Jet &lt;jet.le.-nd@disney.com&gt; | Browser | Method: <code>LL</code> | Label: Lightning Login | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T14:56:09.000+0000 | Jet &lt;jet.le.-nd@disney.com&gt; | Browser | Method: <code>LL</code> | Label: Lightning Login | Match: Standard MFA</li><li><span class="status">✅ PASS</span> 2026-06-26T14:09:54.000+0000 | Brad &lt;brad@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>BuiltInAuthenticator</code> | Label: Built-In Authenticator | Match: Phishing-resistant MFA</li><li><span class="status">✅ PASS</span> 2026-06-26T14:09:45.000+0000 | Brad &lt;brad@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>BuiltInAuthenticator</code> | Label: Built-In Authenticator | Match: Phishing-resistant MFA</li><li><span class="status">✅ PASS</span> 2026-06-26T13:57:11.000+0000 | Anthony &lt;anthony@flok.io.dtcvx.full&gt; | Browser | Method: <code>BuiltInAuthenticator</code> | Label: Built-In Authenticator | Match: Phishing-resistant MFA</li><li><span class="status">✅ PASS</span> 2026-06-26T13:56:59.000+0000 | Anthony &lt;anthony@flok.io.dtcvx.full&gt; | Browser | Method: <code>BuiltInAuthenticator</code> | Label: Built-In Authenticator | Match: Phishing-resistant MFA</li><li><span class="status">✅ PASS</span> 2026-06-26T13:38:43.000+0000 | Anthony &lt;anthony@flok.io.dtcvx.full&gt; | Browser | Method: <code>BuiltInAuthenticator</code> | Label: Built-In Authenticator | Match: Phishing-resistant MFA</li><li><span class="status">✅ PASS</span> 2026-06-26T13:38:33.000+0000 | Anthony &lt;anthony@flok.io.dtcvx.full&gt; | Browser | Method: <code>BuiltInAuthenticator</code> | Label: Built-In Authenticator | Match: Phishing-resistant MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T04:44:20.000+0000 | Andrew &lt;andrew@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>Totp</code> | Label: One-time password | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-26T04:44:07.000+0000 | Andrew &lt;andrew@flokconsulting.com.dtcvx.full&gt; | Browser | Method: <code>Totp</code> | Label: One-time password | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-25T20:43:30.000+0000 | Jet &lt;jet.le.-nd@disney.com&gt; | Browser | Method: <code>LL</code> | Label: Lightning Login | Match: Standard MFA</li><li><span class="status">⚠️ WARN</span> 2026-06-25T20:43:23.000+0000 | Jet &lt;jet.le.-nd@disney.com&gt; | Browser | Method: <code>LL</code> | Label: Lightning Login | Match: Standard MFA</li>
+    </ul>
+    </div>
+  </details>
+
+  <h2>User Summary</h2>
+  <ul>
+    <li>Active internal users: 250</li>
+    <li>Privileged internal users: 85</li>
+    <li>Users with bypass assignments: 0</li>
+    <li>Users with permission-based UI MFA: 32</li>
+    <li>SAML SSO configs: 7</li>
+    <li>Per-user MFA methods visible: 146</li>
+  </ul>
+
+  <h2>Users</h2>
+  <details class="card collapsible">
+    <summary><span class="summary-title">Privileged Users <span class="summary-hint">(please expand for details)</span></span><span class="summary-count">50 user(s)</span></summary>
+    <div class="collapsible-body">
+    <div><strong>Training</strong> &lt;trainingknowledgeintegration@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li></ul></div><div><strong>Jeff</strong> &lt;jeff@flok.io.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Integration</strong> &lt;integration@00ddh000003poegeam.com&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Profile permission: View All Data</li></ul></div><div><strong>Insights</strong> &lt;insightsintegration@00ddh000003poegeam.ext&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Profile permission: View All Data</li></ul></div><div><strong>Dan</strong> &lt;dhalpin@rightpoint.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP, SMS / mobile OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Akhil</strong> &lt;akhilnair@rightpoint.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>GenAI</strong> &lt;genaiintegration@hulu.com.full&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Sourabh</strong> &lt;sourabhgoyal+hulu@rightpoint.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Jet</strong> &lt;jet.le.-nd@disney.com&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Alex</strong> &lt;alexandra.sturgess@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: SMS / mobile OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Dawn</strong> &lt;dawn.cadwell@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Nick</strong> &lt;nick.berg@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Andy</strong> &lt;andy.vazquez@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Michael</strong> &lt;michael.mandujano@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Jincky</strong> &lt;jincky.sales@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Stephanie</strong> &lt;stephanie.luzi@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Permission set &#x27;Manage Users&#x27;: Customize Application</li></ul></div><div><strong>CCPA</strong> &lt;ccpaintegration@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Horven</strong> &lt;horven.tsai@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP, SMS / mobile OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;sf_devops_InitializeEnvironments&#x27;: Customize Application</li><li>Permission set &#x27;Data Cloud Architect&#x27;: Customize Application</li></ul></div><div><strong>Support</strong> &lt;csi-all@disneystreaming.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Flanders</strong> &lt;flandersintegration@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>ServiceNow</strong> &lt;servicenow@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li></ul></div><div><strong>Mulesoft</strong> &lt;mulesoft@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Permission set &#x27;Data Cloud Architect&#x27;: Customize Application</li></ul></div><div><strong>Ryan</strong> &lt;ryan@flokconsulting.com.full&gt;<div class="muted">Available MFA methods: OTP app (TOTP), Email OTP, SMS / mobile OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Salesforce</strong> &lt;salesforceintegration@salesforce-hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: View All Data</li></ul></div><div><strong>Katie</strong> &lt;katie.lockwood@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;Manage Users&#x27;: Customize Application</li></ul></div><div><strong>Integration</strong> &lt;integrationuser@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>jira</strong> &lt;jira@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Automated</strong> &lt;santoshi@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Drew</strong> &lt;dbenson@flokconsulting.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP, SMS / mobile OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;Query All Files Permission&#x27;: View All Data</li></ul></div><div><strong>Data</strong> &lt;datasubjectaccessrequest@hulu.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li></ul></div><div><strong>Data</strong> &lt;dmed_datagovernanceaccess@disneystreaming.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li></ul></div><div><strong>David</strong> &lt;davidw@flokconsulting.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Built-in authenticator, Email OTP, SMS / mobile OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Brad</strong> &lt;brad@flokconsulting.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Built-in authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;Data Cloud Architect&#x27;: Customize Application</li></ul></div><div><strong>Kameron</strong> &lt;kameron@flokconsulting.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Paul</strong> &lt;pkreis+hulu@rightpoint.com.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Vijay</strong> &lt;vijay.gopalabhatla@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;Data Cloud Architect&#x27;: Customize Application</li></ul></div><div><strong>Jen</strong> &lt;jen@flokconsulting.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Built-in authenticator, Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;Data Cloud Architect&#x27;: Customize Application</li></ul></div><div><strong>Andrew</strong> &lt;andrew@flokconsulting.com.dtcvx.full&gt;<div class="muted">Available MFA methods: OTP app (TOTP), Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;Data Cloud Architect&#x27;: Customize Application</li></ul></div><div><strong>Alfred</strong> &lt;alfred@sarkisconsult.com.dtcvx.full&gt;<div class="muted">Available MFA methods: OTP app (TOTP), Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Own</strong> &lt;ownbackup@integration.disneystreaming.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Splunk</strong> &lt;splunk-vx-sfdc@integration.disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Email OTP</div><ul><li>Permission set &#x27;View All Data&#x27;: View All Data</li></ul></div><div><strong>Gary</strong> &lt;gary@flok.io.disneyprod.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Tim</strong> &lt;tim@flok.io.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div><div><strong>Rick</strong> &lt;rick.rice@disney.salesforce.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li><li>Permission set &#x27;Shield App&#x27;: Modify All Data, View All Data</li><li>Permission set &#x27;Threat Detection App&#x27;: View All Data</li></ul></div><div><strong>Aleksandr</strong> &lt;aleksandr.lisenko@disney.com&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Permission set &#x27;Setup Read-Only&#x27;: View All Data</li></ul></div><div><strong>Cristhian</strong> &lt;cristhian.soria.lopez@disney.com&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Permission set &#x27;Setup Read-Only&#x27;: View All Data</li></ul></div><div><strong>Mariusz</strong> &lt;mariusz.kremer@disney.com&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Permission set &#x27;Setup Read-Only&#x27;: View All Data</li></ul></div><div><strong>Graeme</strong> &lt;graeme.funk.-nd@disney.com&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Permission set &#x27;Setup Read-Only&#x27;: View All Data</li></ul></div><div><strong>Ovi</strong> &lt;ovi.comes.-nd@disney.com&gt;<div class="muted">Available MFA methods: none visible</div><ul><li>Permission set &#x27;Setup Read-Only&#x27;: View All Data</li></ul></div><div><strong>Kevin</strong> &lt;kevin.chan@disney.com.dtcvx.full&gt;<div class="muted">Available MFA methods: Salesforce Authenticator, Email OTP</div><ul><li>Profile: System Administrator</li><li>Profile permission: Modify All Data</li><li>Profile permission: View All Data</li><li>Profile permission: Customize Application</li><li>Profile permission: Author Apex</li></ul></div>
+    </div>
+  </details>
+  <details class="card collapsible">
+    <summary><span class="summary-title">Users With MFA Bypass Assignments <span class="summary-hint">(please expand for details)</span></span><span class="summary-count">0 user(s)</span></summary>
+    <div class="collapsible-body">
+    <div class="muted">No bypass-assigned users in the displayed slice.</div>
+    </div>
+  </details>
+  <details class="card collapsible">
+    <summary><span class="summary-title">Users Not Covered If Org-Wide UI MFA Is Off <span class="summary-hint">(please expand for details)</span></span><span class="summary-count">0 user(s)</span></summary>
+    <div class="collapsible-body">
+    <div class="muted">No uncovered users in the displayed slice.</div>
+    </div>
+  </details>
+
+  <h2>Manual Review</h2>
+  <ul>
+    <li><strong>SSO MFA / phishing-resistant claim validation:</strong> The report now samples recent LoginHistory AMR values, but you should still validate every SSO path and full IdP assertion behavior, especially where ACR is not exposed in LoginHistory.</li><li><strong>Actual user MFA method enrollment:</strong> The standard sf CLI surfaces org settings and permission assignments cleanly, but user-level registered MFA methods are not consistently queryable through stable CLI-accessible objects.</li>
+  </ul>
+
+  <h2>Resolutions</h2>
+  <p class="muted">Suggested primary and secondary fixes for the issues flagged in the executive summary.</p>
+  <div class="exec-cards">
+    <div class="exec-card status-yellow"><div class="card-label">⚠️ SSO is configured; review sampled LoginHistory AMR signals and validate all IdP AMR/ACR responses</div><div class="card-subvalue"><strong>Primary:</strong> Configure your identity provider to enforce phishing-resistant MFA and return the corresponding AMR/ACR values (for example phr/phrh or FIDO2/WebAuthn), then confirm LoginHistory AMR signals reflect strong methods across every SSO login path.</div><div class="card-subvalue"><strong>Secondary:</strong> For any SSO path that cannot return phishing-resistant signals, enable Salesforce-side MFA as a backstop and monitor LoginHistory for weak or missing AMR signals.</div></div>
+  </div>
+</body>
+</html>
