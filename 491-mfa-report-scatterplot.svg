@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 440" width="840" height="440" role="img" aria-label="Log-scaled scatterplot of MFA issues by category">
+<rect x="0" y="0" width="100%" height="100%" fill="white" />
+<line x1="90" y1="60" x2="90" y2="330" stroke="#4b5563" stroke-width="1.5" />
+<line x1="90" y1="330" x2="750" y2="330" stroke="#4b5563" stroke-width="1.5" />
+<line x1="90" y1="330.0" x2="750" y2="330.0" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="334.0" text-anchor="end" font-size="12" fill="#6b7280">1</text>
+<line x1="90" y1="291.64737528579803" x2="750" y2="291.64737528579803" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="295.64737528579803" text-anchor="end" font-size="12" fill="#6b7280">2</text>
+<line x1="90" y1="240.94796316342308" x2="750" y2="240.94796316342308" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="244.94796316342308" text-anchor="end" font-size="12" fill="#6b7280">5</text>
+<line x1="90" y1="202.59533844922117" x2="750" y2="202.59533844922117" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="206.59533844922117" text-anchor="end" font-size="12" fill="#6b7280">10</text>
+<line x1="90" y1="164.2427137350192" x2="750" y2="164.2427137350192" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="168.2427137350192" text-anchor="end" font-size="12" fill="#6b7280">20</text>
+<line x1="90" y1="113.54330161264429" x2="750" y2="113.54330161264429" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="117.54330161264429" text-anchor="end" font-size="12" fill="#6b7280">50</text>
+<line x1="90" y1="91.85116538769472" x2="750" y2="91.85116538769472" stroke="#e5e7eb" stroke-width="1" />
+<text x="78" y="95.85116538769472" text-anchor="end" font-size="12" fill="#6b7280">74</text>
+<circle cx="90.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="90.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="90.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="90.0" dy="0">Lack of MFA</tspan><tspan x="90.0" dy="14">options</tspan></text>
+<circle cx="222.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="222.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="222.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="222.0" dy="0">Failed security</tspan><tspan x="222.0" dy="14">checks</tspan></text>
+<circle cx="354.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="354.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="354.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="354.0" dy="0">Logins without</tspan><tspan x="354.0" dy="14">acceptable MFA</tspan><tspan x="354.0" dy="14">signal</tspan></text>
+<circle cx="486.0" cy="91.85116538769472" r="55.01162633521314" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="486.0" y="95.85116538769472" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">74</text>
+<text x="486.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="486.0" dy="0">Elevated</tspan><tspan x="486.0" dy="14">permissions</tspan></text>
+<circle cx="618.0" cy="269.21252802375847" r="20.660254037844386" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="618.0" y="273.21252802375847" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">3</text>
+<text x="618.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="618.0" dy="0">Waive MFA</tspan><tspan x="618.0" dy="14">permission</tspan><tspan x="618.0" dy="14">instances</tspan></text>
+<circle cx="750.0" cy="330" r="12.0" fill="#bfdbfe" stroke="#2563eb" stroke-width="2" fill-opacity="0.9" />
+<text x="750.0" y="334" text-anchor="middle" font-size="13" font-weight="600" fill="#111827">0</text>
+<text x="750.0" y="354" text-anchor="middle" font-size="12" fill="#374151"><tspan x="750.0" dy="0">Users uncovered</tspan><tspan x="750.0" dy="14">if UI MFA off</tspan></text>
+<text x="26" y="195.0" text-anchor="middle" font-size="13" fill="#374151" transform="rotate(-90 26 195.0)">Occurrences (count, log scale)</text>
+<text x="420.0" y="422" text-anchor="middle" font-size="13" fill="#374151">MFA issue category</text>
+</svg>
